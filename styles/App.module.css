@@ -1,0 +1,9 @@
+.csnApp {
+    text-align: center;
+}
+
+.streamTestPanel {
+    border-bottom: 1px solid hsl(0, 0%, 50%);
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+}
