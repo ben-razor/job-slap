@@ -6,6 +6,8 @@ import { TileDocument } from '@ceramicnetwork/stream-tile'
 import { DataModel } from '@glazed/datamodel'
 import { DIDDataStore } from '@glazed/did-datastore';
 import { DID } from 'dids'
+import Image from 'next/image';
+import styles from '../../styles/App.module.css'
 
 import { ModelManager } from '@glazed/devtools'
 import { model as basicProfileModel } from '@datamodels/identity-profile-basic'
@@ -16,8 +18,9 @@ import { model as basicSkillModel} from '@datamodels/basic-skill'
 function DataModels(props) {
     const [published, setPublished] = useState();
     const [schemaURL, setSchemaURL] = useState();
-    const [basicProfile, setBasicProfile] = useState();
     const [dataStore, setDataStore] = useState();
+    const [skills, setSkills] = useState();
+    const [submitting, setSubmitting] = useState(false);
     const ceramic = props.ceramic;
 
     const skillData = props.skillData;
@@ -36,13 +39,12 @@ function DataModels(props) {
                 const _dataStore = new DIDDataStore({ ceramic, model });
                 setDataStore(_dataStore);
                 setSchemaURL(schemaURL);
-                setBasicProfile(JSON.stringify(basicProfile));
             })();
         }
     }, [ceramic, setPublished]);
 
     useEffect(() => {
-        if(dataStore && skillData) {
+        if(dataStore && skillData && Object.keys(skillData).length) {
             (async() => {
                 let date = new Date().toISOString();
                 
@@ -52,21 +54,46 @@ function DataModels(props) {
                 await dataStore.set('basicSkill', skillData); 
 
                 const skillDetails = await dataStore.get('basicSkill');
-            })
+
+                setSkills(skillDetails);
+            })();
         }
-   }, [dataStore, skillData]);
+    }, [dataStore, skillData]);
+
+    function displaySkill(skillDetails) {
+        let skillPanel = <div className={styles.csnSkillRecord}>
+            <div className={styles.csnSkillRecordLeft}>
+                {skillDetails.image &&
+                    <div className={styles.csnSkillImage}>
+                        <img alt={"Image for skill " + skillDetails.name} src={skillDetails.image} width="50" height="50" />
+                    </div>
+                }
+            </div>
+            <div className={styles.csnSkillRecordRight}>
+                <div className={styles.csnSkillImage}>
+                    {skillDetails.name}
+                </div>
+                <div className={styles.csnSkillImage}>
+                    {skillDetails.description}
+                </div>
+            </div>
+        </div>;
+
+        return skillPanel;
+    }
 
     return <div className="data-models">
-        <h2>Tests On Data Models</h2>
         <div>
-            Published:
             {JSON.stringify(published)}
         </div>
         <div>
             Schema URL: {schemaURL}
         </div>
         <div>
-            Basic Profile: {basicProfile}
+            Skills: {JSON.stringify(skills)}
+        </div>
+        <div>
+            { skills && displaySkill(skills) }
         </div>
     </div>
 }

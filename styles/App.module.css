@@ -148,6 +148,7 @@
     border: 1px solid orange;
     border-radius: 1em;
     margin: 0.5em;
+    padding: 0.5em;
 }
 
 .csnSkillsContainer {
@@ -155,6 +156,7 @@
     border: 1px solid orange;
     border-radius: 1em;
     margin: 0.5em;
+    padding: 0.5em;
 }
 
 .csnSkillsFormContainerHeading {
@@ -174,7 +176,7 @@
 }
 
 .csnFormRow {
-    padding: 0.5em;
+    padding: 0.5em 0;
 }
 
 .csnFormLabel {
@@ -187,4 +189,17 @@
 
 .strikeout {
     text-decoration: line-through;
+}
+
+.csnSkillRecord {
+    display: flex;
+}
+
+.csnSkillRecordLeft {
+
+}
+
+.csnSkillRecordRight {
+    display: flex;
+    flex-direction: column;
 }

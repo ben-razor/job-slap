@@ -152,8 +152,11 @@ function MyApp() {
     let _skillData = {
       name: skillName,
       id: skillID,
-      description: skillDesc,
-      image: skillImageURL
+      description: skillDesc
+    }
+
+    if(skillImageURL) {
+      _skillData.image = skillImageURL;
     }
 
     setSkillData(_skillData);
@@ -259,7 +262,7 @@ function MyApp() {
                   Skill
                 </div>
                 <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-name" value={skillName} onChange={setSkillName} />
+                  <input type="text" name="skill-name" value={skillName} onChange={e => setSkillName(e.target.value)} />
                 </div>
               </div>
               <div className={styles.csnFormRow}>
@@ -267,7 +270,7 @@ function MyApp() {
                   ID
                 </div>
                 <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-id" value={skillID} onChange={setSkillID} />
+                  <input type="text" name="skill-id" value={skillID} onChange={e => setSkillID(e.target.value)} />
                 </div>
               </div>
               <div className={styles.csnFormRow}>
@@ -275,7 +278,7 @@ function MyApp() {
                   Description
                 </div>
                 <div className={styles.csnFormInput}>
-                  <textarea name="skill-desc" value={skillDesc} onChange={setSkillDesc}>
+                  <textarea name="skill-desc" value={skillDesc} onChange={e => setSkillDesc(e.target.value)} rows={4}>
                   </textarea>
                 </div>
               </div>
@@ -284,7 +287,7 @@ function MyApp() {
                   Image URL
                 </div>
                 <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-image-url" value={skillImageURL} onChange={setSkillImageURL} />
+                  <input type="text" name="skill-image-url" value={skillImageURL} onChange={e => setSkillImageURL(e.target.value)} />
                 </div>
               </div>
               <div className={styles.csnFormRow}>
@@ -296,10 +299,10 @@ function MyApp() {
         </div>
         <div className={styles.csnSkillsContainer }>
           <div className={styles.csnSkillsContainerHeading}>
-
+            <h1>Your Skills</h1>
           </div>
           <div className={styles.csnSkillsContainerContent}>
-
+            <DataModels skillData={skillData} ceramic={ceramic} />
           </div>
 
         </div>
