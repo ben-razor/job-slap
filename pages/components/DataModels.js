@@ -11,6 +11,7 @@ import { ModelManager } from '@glazed/devtools'
 import { model as basicProfileModel } from '@datamodels/identity-profile-basic'
 import { model as cryptoAccountsModel } from '@datamodels/identity-accounts-crypto'
 import { model as webAccountsModel } from '@datamodels/identity-accounts-web'
+import { model as basicSkillModel} from '@datamodels/basic-skill'
 
 function DataModels(props) {
     const [published, setPublished] = useState();
@@ -22,16 +23,16 @@ function DataModels(props) {
         if(ceramic) {
             (async() => {
                 const manager = new ModelManager(ceramic)
-                manager.addJSONModel(basicProfileModel)
+                manager.addJSONModel(basicSkillModel)
                 
-                const publishedBasicProfileModel = await manager.toPublished();                 
-                setPublished(publishedBasicProfileModel);
+                const publishedModel = await manager.toPublished();                 
+                setPublished(publishedModel);
 
-                const model = new DataModel({ ceramic,  model: publishedBasicProfileModel});
-                const schemaURL = model.getSchemaURL('BasicProfile');
+                const model = new DataModel({ ceramic,  model: publishedModel});
+                const schemaURL = model.getSchemaURL('BasicSkill');
                 const dataStore = new DIDDataStore({ ceramic, model });
-                await dataStore.set('basicProfile', { record: 'content' }); 
-                const basicProfile = await dataStore.get('basicProfile');
+                await dataStore.set('basicSkill', { name: 'Magic', id: 'benrazor.net/actual-real-magic', tags: ['magic'], issuedDate: '2021-10-15T16:49:21', record: 'content' }); 
+                const basicProfile = await dataStore.get('basicSkill');
 
                 setSchemaURL(schemaURL);
                 setBasicProfile(JSON.stringify(basicProfile));

@@ -7,6 +7,7 @@ import { ThreeIdConnect,  EthereumAuthProvider } from '@3id/connect'
 import { TileDocument } from '@ceramicnetwork/stream-tile'
 import { DID } from 'dids'
 import DataModels from './components/DataModels';
+import Image from 'next/image';
 
 const API_URL = 'https://ceramic-clay.3boxlabs.com';
 
@@ -19,6 +20,12 @@ function MyApp() {
   const [ethAddresses, setEthAddresses] = useState();
   const [ethereum, setEthereum] = useState();
   const [commits, setCommits] = useState([]);
+  const [appStarted, setAppStarted] = useState(false);
+
+  const [skillName, setSkillName] = useState('');
+  const [skillID, setSkillID] = useState('');
+  const [skillDesc, setSkillDesc] = useState('');
+  const [skillImageURL, setSkillImageURL] = useState('');
 
   useEffect(() => {
     if(window.ethereum) {
@@ -111,8 +118,10 @@ function MyApp() {
 
   function getEthNeededPanel() {
     return <div className="csn-eth-panel">
-      <div className="csn-eth-message">You need ethereum</div>
-      <div className="csn-eth-metamask-message">Get <a href="https://metamask.io/" target="_blank" rel="noreferrer">MetaMask</a></div>
+      You need wallet or you will stay unsatisified
+      <a className={styles.csnButtonLikeLink} href="https://metamask.io/" target="_blank" rel="noreferrer">
+        Try MetaMask
+      </a>
     </div>;
   }
 
@@ -138,25 +147,167 @@ function MyApp() {
     </div>
   }
 
+  function handleSkillsSubmit(e) {
+
+    e.preventDefault();
+  }
+
+  function getLandingPage() {
+    return (
+      <div className={styles.csnLandingPage}>
+        <div className={styles.csnTopBar}>
+          <div className={styles.csnLogoPanel}>
+            <h1 className={styles.csnLogoPanelTopHeading}>
+              Need Work?
+            </h1>
+            <div className={styles.csnLogoPanelImage}>
+              <Image alt="Job Slap Logo" title="Job Slap Logo" width="200" height="150" layout="intrinsic" src="/job-slap-1-200.png" />
+            </div>
+            <h1 className={styles.csnLogoPanelBottomHeading}>
+              We got your app
+            </h1>
+          </div>
+        </div>
+        <div className={styles.csnMainBar}>
+          <div className={styles.csnMainPanelContainer}>
+          <div className={styles.csnMainProblemPanel  + ' ' + styles.csnMainPanel }>
+              <div className={styles.csnMainProblemTitle }>
+                Problem
+              </div>
+              <div className={styles.csnMainProblemContent}>
+                <ul className={styles.csnMainList}>
+                  <li>Unsatisfying job?</li>
+                  <li>Feeling underappreciated?</li>
+                  <li>Can't see a way out?</li>
+                  <li><span className={styles.strikeout}>Maybe it's you?</span></li>
+                  <li>It's definitely NOT you!</li>
+                </ul>
+              </div>
+            </div>
+            <div className={styles.csnMainCenterPanel  + ' ' + styles.csnMainPanel }>
+              { 
+                ethereum ? 
+                (
+                  ethAddresses ?  
+                  (
+                    ceramic ?
+                    <button onClick={e => setAppStarted(true)}>Let's go!!</button> : 
+                    getWaitingForDIDPanel()
+                  ) 
+                  :
+                  getWaitingForEthPanel() 
+                )
+                :
+                getEthNeededPanel()
+              }
+            </div>
+            <div className={styles.csnMainSolutionPanel + ' ' + styles.csnMainPanel }>
+              <div className={styles.csnMainSolutionTitle }>
+                Solution
+              </div>
+              <div className={styles.csnMainSolutionContent}>
+                <ul className={styles.csnMainList}>
+                  <li>Your skills are held captive by centralized mega-corporations</li>
+                  <li>Within every human lives magical potential</li>
+                  <li>Identify your identities</li>
+                  <li>Take control of your skills</li>
+                </ul>
+              </div>
+            </div> 
+          </div>
+        
+        </div>
+        <div className={styles.csnFeaturesBar}>
+          <div className={styles.csnFeatures}>
+            <div className={styles.csnMainSolutionMagic}>
+              With Job Slap your magic will fly free and you will become satisfied
+            </div>
+          </div>
+        </div>
+    </div>
+    );
+  }
+
+  function getSkillsPage() {
+
+    let logo = <Image  onClick={e => setAppStarted(false)} alt="Job Slap Logo" title="Job Slap Logo" width="160" height="120" layout="intrinsic" src="/job-slap-1-200.png" />
+
+    let skillsContent = <div className={styles.csnSkillsPage}>
+      <div className={styles.csnSkillsPageHeadingRow}>
+        <div onClick={e => setAppStarted(false)}>
+          {logo}
+        </div>
+      </div>
+      <div className={styles.csnSkillsPageMainRow}>
+        <div className={styles.csnSkillsFormContainer }>
+          <div className={styles.csnSkillsFormContainerHeading}>
+
+          </div>
+          <div className={styles.csnSkillsFormContainerContent}>
+            <form onSubmit={e => handleSkillsSubmit(e)}>
+              <div className={styles.csnFormRow}>
+                <div className={styles.csnFormLabel}>
+                  Skill
+                </div>
+                <div className={styles.csnFormInput}>
+                  <input type="text" name="skill-name" value={skillName} onChange={setSkillName} />
+                </div>
+              </div>
+              <div className={styles.csnFormRow}>
+                <div className={styles.csnFormLabel}>
+                  ID
+                </div>
+                <div className={styles.csnFormInput}>
+                  <input type="text" name="skill-id" value={skillID} onChange={setSkillID} />
+                </div>
+              </div>
+              <div className={styles.csnFormRow}>
+                <div className={styles.csnFormLabel}>
+                  Description
+                </div>
+                <div className={styles.csnFormInput}>
+                  <textarea name="skill-desc" value={skillDesc} onChange={setSkillDesc}>
+                  </textarea>
+                </div>
+              </div>
+              <div className={styles.csnFormRow}>
+                <div className={styles.csnFormLabel}>
+                  Image URL
+                </div>
+                <div className={styles.csnFormInput}>
+                  <input type="text" name="skill-image-url" value={skillImageURL} onChange={setSkillImageURL} />
+                </div>
+              </div>
+              <div className={styles.csnFormRow}>
+                <input type="submit" name="submit" value="submit" />
+              </div>
+              
+            </form>
+          </div>
+        </div>
+        <div className={styles.csnSkillsContainer }>
+          <div className={styles.csnSkillsContainerHeading}>
+
+          </div>
+          <div className={styles.csnSkillsContainerContent}>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+    return skillsContent;
+  }
+
   return (
-    <div className="csn-app">
-      { 
-        ethereum ? 
-        (
-          ethAddresses ?  
-          (
-            ceramic ?
-            getAppPanel() : 
-            getWaitingForDIDPanel()
-          ) 
-          :
-          getWaitingForEthPanel() 
-        )
-        :
-        getEthNeededPanel()
+    <div className={styles.csnApp}>
+      {
+        (ceramic && appStarted) ?
+          getSkillsPage() :
+          getLandingPage()
       }
     </div>
-  
+ 
   );
 }
 
