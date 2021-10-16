@@ -26,6 +26,7 @@ function MyApp() {
   const [skillID, setSkillID] = useState('');
   const [skillDesc, setSkillDesc] = useState('');
   const [skillImageURL, setSkillImageURL] = useState('');
+  const [skillData, setSkillData] = useState({});
 
   useEffect(() => {
     if(window.ethereum) {
@@ -148,6 +149,14 @@ function MyApp() {
   }
 
   function handleSkillsSubmit(e) {
+    let _skillData = {
+      name: skillName,
+      id: skillID,
+      description: skillDesc,
+      image: skillImageURL
+    }
+
+    setSkillData(_skillData);
 
     e.preventDefault();
   }

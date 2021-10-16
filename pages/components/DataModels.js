@@ -17,7 +17,10 @@ function DataModels(props) {
     const [published, setPublished] = useState();
     const [schemaURL, setSchemaURL] = useState();
     const [basicProfile, setBasicProfile] = useState();
+    const [dataStore, setDataStore] = useState();
     const ceramic = props.ceramic;
+
+    const skillData = props.skillData;
 
     useEffect(() => {
         if(ceramic) {
@@ -30,15 +33,28 @@ function DataModels(props) {
 
                 const model = new DataModel({ ceramic,  model: publishedModel});
                 const schemaURL = model.getSchemaURL('BasicSkill');
-                const dataStore = new DIDDataStore({ ceramic, model });
-                await dataStore.set('basicSkill', { name: 'Magic', id: 'benrazor.net/actual-real-magic', tags: ['magic'], issuedDate: '2021-10-15T16:49:21', record: 'content' }); 
-                const basicProfile = await dataStore.get('basicSkill');
-
+                const _dataStore = new DIDDataStore({ ceramic, model });
+                setDataStore(_dataStore);
                 setSchemaURL(schemaURL);
                 setBasicProfile(JSON.stringify(basicProfile));
             })();
         }
     }, [ceramic, setPublished]);
+
+    useEffect(() => {
+        if(dataStore && skillData) {
+            (async() => {
+                let date = new Date().toISOString();
+                
+                let _skillData = { ... skillData };
+                _skillData.issuedDate = date;
+                
+                await dataStore.set('basicSkill', skillData); 
+
+                const skillDetails = await dataStore.get('basicSkill');
+            })
+        }
+   }, [dataStore, skillData]);
 
     return <div className="data-models">
         <h2>Tests On Data Models</h2>
