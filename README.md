@@ -2,6 +2,8 @@
 
 An application to demonstrate the Basic Skill DataModel submitted to the [Ceramic DataModels](https://github.com/ceramicstudio/datamodels) repository.
 
+Watch the [demo movie](https://youtu.be/2OSPV_94l0o)
+
 Part of the [Gitcoin Hackathon](https://gitcoin.co/issue/ceramicnetwork/ceramic/80/100026723).
 
 ## About The Application
