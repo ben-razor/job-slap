@@ -69,6 +69,7 @@ function MyApp() {
   useEffect(() => {
     if(ceramic) {
       (async () => {
+        /*
         const doc = await TileDocument.create(ceramic, {hello: 'benwar'})
         setTestDoc(JSON.stringify(doc.content));
 
@@ -88,6 +89,7 @@ function MyApp() {
           newCommits.push(commitDoc.content);
         }
         setCommits(newCommits);
+        */
       })();
     }
   }, [ceramic, setCeramic, setTestDoc, setStreamId]);

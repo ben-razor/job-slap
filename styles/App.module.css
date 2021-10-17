@@ -157,6 +157,7 @@
     border-radius: 1em;
     margin: 0.5em;
     padding: 0.5em;
+    word-break: break-all;
 }
 
 .csnSkillsFormContainerHeading {
@@ -164,7 +165,6 @@
 }
 
 .csnSkillsFormContainerContent {
-
 }
 
 .csnSkillsContainerHeading {
