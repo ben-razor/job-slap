@@ -1,4 +1,4 @@
-# Ceramic Job Slap
+# Job Slap
 
 An application to demonstrate the Basic Skill DataModel submitted to the [Ceramic DataModels](https://github.com/ceramicstudio/datamodels) repository.
 
