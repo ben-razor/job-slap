@@ -33,6 +33,9 @@ function DataModels(props) {
 
     const [loadingMessage, setLoadingMessage] = useState('Loading...');
     const [debug, setDebug] = useState(false);
+    const [entryTab, setEntryTab] = useState('simple');
+
+    const [verifiedSkillText, setVerifiedSkillText] = useState('');
 
     useEffect(() => {
         if(ceramic) {
@@ -63,29 +66,6 @@ function DataModels(props) {
         }
     }, [ceramic, setPublished]);
 
-    useEffect(() => {
-        if(dataStore && skillData && Object.keys(skillData).length) {
-            setLoadingMessage('Creating skill...');
-            (async() => {
-                let allSkills = await dataStore.get('basicSkills');
-                if(!allSkills) {
-                    allSkills = { skills: [] }
-                }
-
-                let date = new Date().toISOString();
-                
-                let _skillData = { ... skillData };
-                _skillData.issuedDate = date;
-                
-                allSkills.skills.push(_skillData);
-                await dataStore.set('basicSkills', allSkills); 
-
-                setSkills(allSkills.skills.reverse());
-                setLoadingMessage('');
-            })();
-        }
-    }, [dataStore, skillData]);
-
     function displaySkill(allSkills) {
         let skillRecords = [];
 
@@ -115,6 +95,11 @@ function DataModels(props) {
     }
 
     function handleSkillsSubmit(e) {
+        setLoadingMessage('Updating skills...')
+        setTimeout(() => {
+            setLoadingMessage('')
+        }, 8000);
+
         let skillData = {
             name: skillName,
             id: skillID,
@@ -134,18 +119,100 @@ function DataModels(props) {
 
                 let date = new Date().toISOString();
                 
-                let _skillData = { ... skillData };
+                let _skillData = { ...skillData };
                 _skillData.issuedDate = date;
                 
-                console.log(' pre set ');
                 allSkills.skills.push(_skillData);
                 await dataStore.set('basicSkills', allSkills); 
-                console.log(' post set');
 
-                setSkills(allSkills.skills);
+                setSkills(allSkills.skills.reverse());
+                setLoadingMessage('')
             })();
         }
 
+        e.preventDefault();
+    }
+
+    function getSimpleSkillForm() {
+        return <form onSubmit={e => handleSkillsSubmit(e)}>
+        <div className={styles.csnFormRow}>
+            <div className={styles.csnFormLabel}>
+            Skill
+            </div>
+            <div className={styles.csnFormInput}>
+            <input type="text" name="skill-name" value={skillName} onChange={e => setSkillName(e.target.value)} />
+            </div>
+        </div>
+        <div className={styles.csnFormRow}>
+            <div className={styles.csnFormLabel}>
+            ID
+            </div>
+            <div className={styles.csnFormInput}>
+            <input type="text" name="skill-id" value={skillID} onChange={e => setSkillID(e.target.value)} />
+            </div>
+        </div>
+        <div className={styles.csnFormRow}>
+            <div className={styles.csnFormLabel}>
+            Description
+            </div>
+            <div className={styles.csnFormInput}>
+            <textarea name="skill-desc" value={skillDesc} onChange={e => setSkillDesc(e.target.value)} rows={4}>
+            </textarea>
+            </div>
+        </div>
+        <div className={styles.csnFormRow}>
+            <div className={styles.csnFormLabel}>
+            Image URL
+            </div>
+            <div className={styles.csnFormInput}>
+            <input type="text" name="skill-image-url" value={skillImageURL} onChange={e => setSkillImageURL(e.target.value)} />
+            </div>
+        </div>
+        <div className={styles.csnFormRow}>
+            <input type="submit" name="submit" value="submit" />
+        </div>
+        
+        </form>
+    }
+
+    function submitVerifiedSkill(e) {
+        setLoadingMessage('Updating skills...')
+        setTimeout(() => {
+            setLoadingMessage('')
+        }, 8000);
+
+        try {
+            let verfiedSkill = JSON.parse(verifiedSkillText);
+
+            (async() => {
+                try {
+                    let allSkills = await dataStore.get('basicSkills');
+                    if(!allSkills) {
+                        allSkills = { skills: [] }
+                    }
+
+                    let date = new Date().toISOString();
+                    
+                    let _skillData = { ...verfiedSkill };
+                    _skillData.issuedDate = date;
+                    
+                    allSkills.skills.push(_skillData);
+                    await dataStore.set('basicSkills', allSkills); 
+
+                    setSkills(allSkills.skills.reverse());
+                    setLoadingMessage('')
+                }
+                catch(e) {
+                    console.log(e);
+                }
+            
+            })();
+
+        }
+        catch(e) {
+            console.log(e);
+            setLoadingMessage('')
+        }
         e.preventDefault();
     }
 
@@ -153,100 +220,81 @@ function DataModels(props) {
 
         let logo = <Image  onClick={e => setAppStarted(false)} alt="Job Slap Logo" title="Job Slap Logo" width="160" height="120" layout="intrinsic" src="/job-slap-1-200.png" />
 
-        let skillsContent = <div className={styles.csnSkillsPage}>
-        <div className={styles.csnSkillsPageHeadingRow}>
-            <div onClick={e => setAppStarted(false)}>
-            {logo}
+        let skillsContent = 
+        <div className={styles.csnSkillsPage}>
+            <div className={styles.csnSkillsPageHeadingRow}>
+                <div onClick={e => setAppStarted(false)}>
+                {logo}
+                </div>
             </div>
-        </div>
-        <div className={styles.csnSkillsPageMainRow}>
-            { loadingMessage &&
-                <div className={styles.csnOverlay}>
-                    <div className={styles.csnOverlayContent}>
-                        <div className={styles.csnOverlayTextUpper}>
-                                <h3>{loadingMessage}</h3>
-                        </div>
-                        <div className={styles.csnOverlayLoader}>
-                            <Image alt="Loader" src="/infinity-loader.gif" width="200" height="200" />
-                        </div>
-                        <div className={styles.csnOverlayTextLower}>
+            <div className={styles.csnSkillsPageMainRow}>
+                { loadingMessage &&
+                    <div className={styles.csnOverlay}>
+                        <div className={styles.csnOverlayContent}>
+                            <div className={styles.csnOverlayTextUpper}>
+                                    <h3>{loadingMessage}</h3>
+                            </div>
+                            <div className={styles.csnOverlayLoader}>
+                                <Image alt="Loader" src="/infinity-loader.gif" width="200" height="200" />
+                            </div>
+                            <div className={styles.csnOverlayTextLower}>
 
-                        </div>
-                    </div>
-                </div>
-            }
-            <div className={styles.csnSkillsFormContainer }>
-            <div className={styles.csnSkillsFormContainerHeading}>
-
-            </div>
-            <div className={styles.csnSkillsFormContainerContent}>
-                <form onSubmit={e => handleSkillsSubmit(e)}>
-                <div className={styles.csnFormRow}>
-                    <div className={styles.csnFormLabel}>
-                    Skill
-                    </div>
-                    <div className={styles.csnFormInput}>
-                    <input type="text" name="skill-name" value={skillName} onChange={e => setSkillName(e.target.value)} />
-                    </div>
-                </div>
-                <div className={styles.csnFormRow}>
-                    <div className={styles.csnFormLabel}>
-                    ID
-                    </div>
-                    <div className={styles.csnFormInput}>
-                    <input type="text" name="skill-id" value={skillID} onChange={e => setSkillID(e.target.value)} />
-                    </div>
-                </div>
-                <div className={styles.csnFormRow}>
-                    <div className={styles.csnFormLabel}>
-                    Description
-                    </div>
-                    <div className={styles.csnFormInput}>
-                    <textarea name="skill-desc" value={skillDesc} onChange={e => setSkillDesc(e.target.value)} rows={4}>
-                    </textarea>
-                    </div>
-                </div>
-                <div className={styles.csnFormRow}>
-                    <div className={styles.csnFormLabel}>
-                    Image URL
-                    </div>
-                    <div className={styles.csnFormInput}>
-                    <input type="text" name="skill-image-url" value={skillImageURL} onChange={e => setSkillImageURL(e.target.value)} />
-                    </div>
-                </div>
-                <div className={styles.csnFormRow}>
-                    <input type="submit" name="submit" value="submit" />
-                </div>
-                
-                </form>
-            </div>
-            </div>
-            <div className={styles.csnSkillsContainer }>
-            <div className={styles.csnSkillsContainerHeading}>
-                <h1>Your Skills</h1>
-            </div>
-            <div className={styles.csnSkillsContainerContent}>
-
-            <div className="data-models">
-                { debug && 
-                    <div>
-                        <div>
-                            {JSON.stringify(published)}
-                        </div>
-                        <div>
-                            Schema URL: {schemaURL}
+                            </div>
                         </div>
                     </div>
                 }
-                <div>
-                    { skills && displaySkill(skills) }
+
+                <div className={styles.csnSkillsFormContainer }>
+                    <div className={styles.csnSkillsFormContainerContent}>
+                        <div>
+                            <div className={styles.csnSkillsEntryTabs}>
+                                <div onClick={e => setEntryTab('simple')} className={styles.csnSkillsEntryTab + ' ' + (entryTab === 'simple' && styles.csnSkillsEntryTabActive)}>
+                                    Enter Skill
+                                </div>
+                                <div onClick={e => setEntryTab('upload')} className={styles.csnSkillsEntryTab + ' ' + (entryTab !== 'simple' && styles.csnSkillsEntryTabActive)}>
+                                    Upload
+                                </div>
+                            </div>
+
+                            <div style={{display: entryTab === 'simple' ? 'block' : 'none'}}>
+                                {getSimpleSkillForm()}
+                            </div>
+                            <div style={{display: entryTab !== 'simple' ? 'block' : 'none'}}>
+                                <h3>Upload verified skills</h3>
+                                <form onSubmit={e => submitVerifiedSkill(e)}>
+                                    <textarea className={styles.csnVerfiedSkillEntry} rows="20" value={verifiedSkillText} onChange={e => setVerifiedSkillText(e.target.value)}>
+
+                                    </textarea>
+                                    <input type="submit" name="submit" value="Upload" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className={styles.csnSkillsContainer }>
+                    <div className={styles.csnSkillsContainerHeading}>
+                        <h1>Your Skills</h1>
+                    </div>
+                    <div className={styles.csnSkillsContainerContent}>
+                        <div className="data-models">
+                            { debug && 
+                                <div>
+                                    <div>
+                                        {JSON.stringify(published)}
+                                    </div>
+                                    <div>
+                                        Schema URL: {schemaURL}
+                                    </div>
+                                </div>
+                            }
+                            <div>
+                                { skills && displaySkill(skills) }
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-                
-            </div>
-
-            </div>
-        </div>
         </div>
         return skillsContent;
     }

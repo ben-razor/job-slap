@@ -254,3 +254,29 @@
 .csnOverlayTextUpper {
 
 }
+
+.csnVerfiedSkillEntry {
+    width: 100%;
+}
+
+.csnSkillsEntryTabs {
+    display: flex;
+    border-bottom: 2px solid black;
+}
+
+.csnSkillsEntryTab {
+    padding: 0.5em 1em;
+    border-width: 2px 2px 0 2px;
+    border-style: solid;
+    border-color: black;
+    margin-right: 0.25em;
+    background-color: grey;
+    color: black;
+    border-radius: 0.5em 0.5em 0 0;
+    font-weight: bold;
+}
+
+.csnSkillsEntryTabActive {
+    background-color: hsl(40deg, 80%, 50%);
+    color: white;
+}
