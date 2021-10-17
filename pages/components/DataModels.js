@@ -23,11 +23,21 @@ function DataModels(props) {
     const [skills, setSkills] = useState();
     const [submitting, setSubmitting] = useState(false);
     const ceramic = props.ceramic;
+    const setAppStarted = props.setAppStarted;
 
-    const skillData = props.skillData;
+    const [skillName, setSkillName] = useState('');
+    const [skillID, setSkillID] = useState('');
+    const [skillDesc, setSkillDesc] = useState('');
+    const [skillImageURL, setSkillImageURL] = useState('');
+    const [skillData, setSkillData] = useState({});
+
+    const [loadingMessage, setLoadingMessage] = useState('Loading...');
+    const [debug, setDebug] = useState(false);
 
     useEffect(() => {
         if(ceramic) {
+            setLoadingMessage('Loading your skills...');
+
             (async() => {
                 const manager = new ModelManager(ceramic)
                 manager.addJSONModel(basicSkillsModel)
@@ -41,20 +51,80 @@ function DataModels(props) {
                 setDataStore(_dataStore);
                 setSchemaURL(schemaURL);
 
-                // let basicSkillsSchema = 'ceramic://k3y52l7qbv1fry38qqu50ty1fmaiuvj3ir7yjey5y7vegawmn8y3b9c6o3fonj4sg';
-                let basicSkillsSchema = 'ceramic://k3y52l7qbv1frym9z6lkz0xo3muo74qsuexcvf1lzhock8mzas9xcuyaulmar0zr4';
-                let doc1 = await TileDocument.load(ceramic, basicSkillsSchema);
+                let allSkills = await _dataStore.get('basicSkills');
+                if(!allSkills) {
+                    allSkills = { skills: [] }
+                }
 
-                let basicSkillSchema = 'ceramic://k3y52l7qbv1frxtahhchzdvrsjl88pu6k3b8ons0p4wkcp8qm9r9kec3divx12l8g';
-                let doc2 = await TileDocument.load(ceramic, basicSkillSchema);
+                setSkills(allSkills.skills.reverse());
 
-                console.log('after doc1 and doc2');
-
+                setLoadingMessage('');
             })();
         }
     }, [ceramic, setPublished]);
 
     useEffect(() => {
+        if(dataStore && skillData && Object.keys(skillData).length) {
+            setLoadingMessage('Creating skill...');
+            (async() => {
+                let allSkills = await dataStore.get('basicSkills');
+                if(!allSkills) {
+                    allSkills = { skills: [] }
+                }
+
+                let date = new Date().toISOString();
+                
+                let _skillData = { ... skillData };
+                _skillData.issuedDate = date;
+                
+                allSkills.skills.push(_skillData);
+                await dataStore.set('basicSkills', allSkills); 
+
+                setSkills(allSkills.skills.reverse());
+                setLoadingMessage('');
+            })();
+        }
+    }, [dataStore, skillData]);
+
+    function displaySkill(allSkills) {
+        let skillRecords = [];
+
+        let key = 0;
+        let noImageURL = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAeIAAAHiAErNLpZAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAABVtJREFUaIHtmt1rE1kYh5/JpDUUN02mqV/UgEGzpSKCSIuipCxNqtKmCd7oleCFpUv0cpe9279AVLARUUGvREQm9UIqFCKErrVGxCJSKbkyxVhrE2qrbdrJXsQOSZpqvhulD5yLvGcy5/fjPXPmPTMD6dQD/wAjQBRIVFmLAk+/aaxnDRzAVBWIzbV9ADqymYhXgbh822KqmfqfLBPZMqPXAn8CptT0uFwunE4nJlNaeN35+PEjPp8Pn8+XGm4E+gSSF3brStTtdnPhwoUKS8yPS5cuZZp5qgGsqRGn01lRUYXQ09OTGfpdAxhSI0ajsWKCCkWSpMyQUbMeQsrBhpFqoyRGHjx4QDQazdoXi8UyV5iyUBIj79+/58aNG8zOzq7qSyQSLC4ulmKY71ISI6Iocu7cOa5fv878/PwPj5+fn2d6eroUQ6toS3UivV7P2bNn8Xq9eDweNm3atOoYRVG4desWkFzm3717R2dnJ83NzUWPXzIjkBR35swZ+vv78Xg81NTUpPUPDAzQ1tbGvn37gOS0u3btGmazmbq6uqLGLvmqZTKZOH36NP39/SwtLaX1hcNh1QSAIAjYbDbGxsaKHrcsy++2bds4efIkXq+X5eVlNa7Vrp4Ay8vLiKJY9Jhlu480NTXR1dXFzZs31ZjFYmF0dFT9rSgKfr8/LUuFUtJrJJNdu3bhdruZmJgAwG63c//+fUZHR9m8eTOxWIyurq6sC0O+CCQ3JyqyLFNfv+Z2uCASiQSCIKTFFhYWCjYQi8VwuVxpsYqUKJkmgJJkIZWNWqva2DBSbeRkZG5ujmAwWG4tRZGTka9fvxIKhcqtpSh+mamV9519YGCA1tZWZFkmHo/T19fH4OAgoVAIu92uluSBQIDXr18Tj8dxOBxYrcmnTolEAp/PRzgcRqvV4na7GRkZobu7G4BgMMjw8DAajQar1Yrdbi+PkcnJSR4/fkxvby/Pnj3j8uXLHD9+nBMnTuD1elUjGo2G3t5eFEXhypUrmM1mdDodsixjtVpxuVwsLS1x+/ZttUqemJhgbGyM8+fPAzA0NITf76e9vf2HuvKeWvF4HJvNhiAI7Nmzh8+fP9PS0oIgCNTW1qrHHT58mHg8TiQSwWKx8PbtWwCi0Sh79+4FktXwsWPH1K3wo0ePaG5uJhgMEgwGMRgMBAKBnHTlnZGamhrMZjOAmv4VFEUBklvZO3fuYDKZ2LlzJ6Ioqvv5zJK9oaFh1flTyayp1iJvI4IgpNVO2eqoJ0+e4HA4sFgsAAwODqp9X758QVEUNJrkZHj+/Ll6ju3bt7N161aampqA5F4lEomUx0gu7N69G7/fjyiKvHr1img0qhaJnZ2dXL16FYfDQTgcZnp6Wu3r7u7m4sWLtLe3U1dXx9DQUM4ZEYF/UwOnTp1Cp9OlHaTVapEkCb1ejyRJ6vNhURSRJEkt+41GI0ajkYaGBiRJYnx8nP3793Pw4EF0Oh16vR6DwUBLSwtv3rxhx44dHDlyhJcvX3LgwAG0Wi2HDh1icnKSubk5enp62LJlyyrRCwsL3L17Ny1Wkf3I93jx4gWzs7PYbLac/7Nu+5FUEokE9+7dIxQKMTw8TCAQ4OjRo0Wft+JGBEHAbrcTCoWora3F4/GoF34xlHXPvhZGo5GOjlUvZIvil6m1NoxUGxqSn0WozMzMrJOU3MnyJH9GA4ynRmRZrpigQsmicVwL+IC2lcjK2yWn00ljY2PFxOXC1NQUsizz8OHDzC4Zkp9wfGD9P8UotEUA/YqjDpIfqKy3qHzbIvBHZno6frLMRLKZWEEP/A38B3yqArGZ7dM3bX8Bv6UK/x9QCQHJsosSgwAAAABJRU5ErkJggg==';
+        for(let skillDetails of allSkills) {
+            let imageURLWithDefault = skillDetails.image || noImageURL;
+            let skillPanel = <div className={styles.csnSkillRecord} key={key}>
+                <div className={styles.csnSkillRecordLeft}>
+                    <div className={styles.csnSkillImage}>
+                        <img alt={"Image for skill " + skillDetails.name} src={imageURLWithDefault} width="50" height="50" />
+                    </div>
+                </div>
+                <div className={styles.csnSkillRecordRight}>
+                    <div className={styles.csnSkillName}>
+                        {skillDetails.name}
+                    </div>
+                    <div className={styles.csnSkillDesc}>
+                        {skillDetails.description}
+                    </div>
+                </div>
+            </div>;
+            skillRecords.push(skillPanel);
+            key++;
+        }
+        return skillRecords;
+    }
+
+    function handleSkillsSubmit(e) {
+        let skillData = {
+            name: skillName,
+            id: skillID,
+            description: skillDesc
+        }
+
+        if(skillImageURL) {
+            skillData.image = skillImageURL;
+        }
+
         if(dataStore && skillData && Object.keys(skillData).length) {
             (async() => {
                 let allSkills = await dataStore.get('basicSkills');
@@ -73,91 +143,115 @@ function DataModels(props) {
                 console.log(' post set');
 
                 setSkills(allSkills.skills);
-                /*
-                const commits = await ceramic.loadStreamCommits('k2t6wyfsu4pg082s7kwnxst1ya3imoihfnegjbyg5q0jrrpnxvpb8vvayydvbj');
-
-                console.log(JSON.stringify(skillDetails));
-
-                const index = await dataStore.getIndex();
-                const it = dataStore.iterator();
-
-                for await (let item of it) {
-                    console.log(item);
-                }
-
-                let queries = [];
-
-                const doc = await TileDocument.load(ceramic, 'ceramic://k2t6wyfsu4pg082s7kwnxst1ya3imoihfnegjbyg5q0jrrpnxvpb8vvayydvbj');
-                let i = 0;
-                for(let commitID of doc.allCommitIds.reverse()) {
-                    queries.push({streamId: commitID.toString()});  
-                    const commitDoc = await TileDocument.load(ceramic, commitID);
-                    console.log('commit content: ', JSON.stringify(commitDoc.content))
-                    if(++i >= 3) {
-                        break;
-                    }
-                }                
-
-                //let stream = await ceramic.loadStream('kjzl6cwe1jw14978uoi1vnvv0cjeask999m41xh27jtnhk59vlonocowa0yvd33');
-                //console.log('stream: ', stream.content)
-
-                console.log('queries: ', queries);
-                queries = [
-                    {
-                        streamId: "k6zn3rc3iwguciahe4y0x952rn036i46amejauqayxm50aq6d53cai8ceaab93uscv6goa6t2wsq4jh97r1zynhw9iytmrpobx35v8bbl4ggvf201ubn8gm",
-                    }
-                ];
-                const docs = await ceramic.multiQuery(queries);
-                for(let streamId of Object.keys(docs)) {
-                    console.log(streamId);
-                    console.log(docs[streamId].content);
-                }
-
-                setSkills(skillDetails);
-                */
             })();
         }
-    }, [dataStore, skillData]);
 
-    function displaySkill(allSkills) {
-        let skillRecords = [];
-
-        let key = 0;
-        for(let skillDetails of allSkills) {
-            let skillPanel = <div className={styles.csnSkillRecord} key={key}>
-                <div className={styles.csnSkillRecordLeft}>
-                    {skillDetails.image &&
-                        <div className={styles.csnSkillImage}>
-                            <img alt={"Image for skill " + skillDetails.name} src={skillDetails.image} width="50" height="50" />
-                        </div>
-                    }
-                </div>
-                <div className={styles.csnSkillRecordRight}>
-                    <div className={styles.csnSkillImage}>
-                        {skillDetails.name}
-                    </div>
-                    <div className={styles.csnSkillImage}>
-                        {skillDetails.description}
-                    </div>
-                </div>
-            </div>;
-            skillRecords.push(skillPanel);
-            key++;
-        }
-        return skillRecords;
+        e.preventDefault();
     }
 
-    return <div className="data-models">
-        <div>
-            {JSON.stringify(published)}
+    function getSkillsPage() {
+
+        let logo = <Image  onClick={e => setAppStarted(false)} alt="Job Slap Logo" title="Job Slap Logo" width="160" height="120" layout="intrinsic" src="/job-slap-1-200.png" />
+
+        let skillsContent = <div className={styles.csnSkillsPage}>
+        <div className={styles.csnSkillsPageHeadingRow}>
+            <div onClick={e => setAppStarted(false)}>
+            {logo}
+            </div>
         </div>
-        <div>
-            Schema URL: {schemaURL}
+        <div className={styles.csnSkillsPageMainRow}>
+            { loadingMessage &&
+                <div className={styles.csnOverlay}>
+                    <div className={styles.csnOverlayContent}>
+                        <div className={styles.csnOverlayTextUpper}>
+                                <h3>{loadingMessage}</h3>
+                        </div>
+                        <div className={styles.csnOverlayLoader}>
+                            <Image alt="Loader" src="/infinity-loader.gif" width="200" height="200" />
+                        </div>
+                        <div className={styles.csnOverlayTextLower}>
+
+                        </div>
+                    </div>
+                </div>
+            }
+            <div className={styles.csnSkillsFormContainer }>
+            <div className={styles.csnSkillsFormContainerHeading}>
+
+            </div>
+            <div className={styles.csnSkillsFormContainerContent}>
+                <form onSubmit={e => handleSkillsSubmit(e)}>
+                <div className={styles.csnFormRow}>
+                    <div className={styles.csnFormLabel}>
+                    Skill
+                    </div>
+                    <div className={styles.csnFormInput}>
+                    <input type="text" name="skill-name" value={skillName} onChange={e => setSkillName(e.target.value)} />
+                    </div>
+                </div>
+                <div className={styles.csnFormRow}>
+                    <div className={styles.csnFormLabel}>
+                    ID
+                    </div>
+                    <div className={styles.csnFormInput}>
+                    <input type="text" name="skill-id" value={skillID} onChange={e => setSkillID(e.target.value)} />
+                    </div>
+                </div>
+                <div className={styles.csnFormRow}>
+                    <div className={styles.csnFormLabel}>
+                    Description
+                    </div>
+                    <div className={styles.csnFormInput}>
+                    <textarea name="skill-desc" value={skillDesc} onChange={e => setSkillDesc(e.target.value)} rows={4}>
+                    </textarea>
+                    </div>
+                </div>
+                <div className={styles.csnFormRow}>
+                    <div className={styles.csnFormLabel}>
+                    Image URL
+                    </div>
+                    <div className={styles.csnFormInput}>
+                    <input type="text" name="skill-image-url" value={skillImageURL} onChange={e => setSkillImageURL(e.target.value)} />
+                    </div>
+                </div>
+                <div className={styles.csnFormRow}>
+                    <input type="submit" name="submit" value="submit" />
+                </div>
+                
+                </form>
+            </div>
+            </div>
+            <div className={styles.csnSkillsContainer }>
+            <div className={styles.csnSkillsContainerHeading}>
+                <h1>Your Skills</h1>
+            </div>
+            <div className={styles.csnSkillsContainerContent}>
+
+            <div className="data-models">
+                { debug && 
+                    <div>
+                        <div>
+                            {JSON.stringify(published)}
+                        </div>
+                        <div>
+                            Schema URL: {schemaURL}
+                        </div>
+                    </div>
+                }
+                <div>
+                    { skills && displaySkill(skills) }
+                </div>
+            </div>
+                
+            </div>
+
+            </div>
         </div>
-        <div>
-            { skills && displaySkill(skills) }
         </div>
-    </div>
+        return skillsContent;
+    }
+
+    return getSkillsPage();
 }
 
 export default DataModels;

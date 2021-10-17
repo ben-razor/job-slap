@@ -141,6 +141,8 @@
 
 .csnSkillsPageMainRow {
     display: flex;
+    position: relative;
+    border-radius: 1em;
 }
 
 .csnSkillsFormContainer {
@@ -193,6 +195,11 @@
 
 .csnSkillRecord {
     display: flex;
+    width: 95%;
+    margin: 0.5em;
+    padding: 0.5em;
+    border: 2px solid grey;
+    border-radius: 1em;
 }
 
 .csnSkillRecordLeft {
@@ -202,4 +209,48 @@
 .csnSkillRecordRight {
     display: flex;
     flex-direction: column;
+    flex: 1;    
+    padding: 0.5em;
+}
+
+.csnSkillName {
+    font-size: 1.2em;
+    font-weight: bold;
+    background-color: hsl(40deg, 80%, 50%);
+    width: 100%;
+    padding: 0.25em;
+    color: white;
+}
+
+.csnSkillDesc {
+    padding: 0.25em;
+}
+
+.csnSkillImage {
+    padding: 0.25em;
+}
+
+.csnOverlay {
+    display: flex;
+    background-color: hsla(0deg, 0%, 90%, 0.9);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 1em;
+    text-align: center;
+}
+
+.csnOverlayContent {
+    width: 30%;
+    margin: 5em auto;
+}
+
+.csnOverlayTextUpper {
+    font-size: 1.2em;
+}
+
+.csnOverlayTextUpper {
+
 }

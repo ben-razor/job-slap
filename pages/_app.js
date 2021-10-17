@@ -22,12 +22,6 @@ function MyApp() {
   const [commits, setCommits] = useState([]);
   const [appStarted, setAppStarted] = useState(false);
 
-  const [skillName, setSkillName] = useState('');
-  const [skillID, setSkillID] = useState('');
-  const [skillDesc, setSkillDesc] = useState('');
-  const [skillImageURL, setSkillImageURL] = useState('');
-  const [skillData, setSkillData] = useState({});
-
   useEffect(() => {
     if(window.ethereum) {
       setEthereum(window.ethereum);
@@ -65,34 +59,6 @@ function MyApp() {
       })();
     }
   }, [ethereum, ethAddresses]);
-
-  useEffect(() => {
-    if(ceramic) {
-      (async () => {
-        /*
-        const doc = await TileDocument.create(ceramic, {hello: 'benwar'})
-        setTestDoc(JSON.stringify(doc.content));
-
-        const streamId = doc.id.toString();
-        setStreamId(streamId);
-
-        const newLoadedDoc = await TileDocument.load(ceramic, streamId)
-        setLoadedDoc(JSON.stringify(newLoadedDoc.content));
-
-        await doc.update({foo: 'baz'}, {tags: ['baz']});
-        const newUpdatedDoc = await TileDocument.load(ceramic, streamId)
-        setUpdatedDoc(JSON.stringify(newUpdatedDoc.content));
-
-        let newCommits = [];
-        for(let commitID of newUpdatedDoc.allCommitIds) {
-          const commitDoc = await TileDocument.load(ceramic, commitID);
-          newCommits.push(commitDoc.content);
-        }
-        setCommits(newCommits);
-        */
-      })();
-    }
-  }, [ceramic, setCeramic, setTestDoc, setStreamId]);
 
   function getTestDocUI(testDoc, streamId) {
     let content = <h3>Test doc loading...</h3>
@@ -148,22 +114,6 @@ function MyApp() {
     return <div className="csn-waiting-for-did">
       Waiting for a decentralized ID...
     </div>
-  }
-
-  function handleSkillsSubmit(e) {
-    let _skillData = {
-      name: skillName,
-      id: skillID,
-      description: skillDesc
-    }
-
-    if(skillImageURL) {
-      _skillData.image = skillImageURL;
-    }
-
-    setSkillData(_skillData);
-
-    e.preventDefault();
   }
 
   function getLandingPage() {
@@ -243,74 +193,7 @@ function MyApp() {
   }
 
   function getSkillsPage() {
-
-    let logo = <Image  onClick={e => setAppStarted(false)} alt="Job Slap Logo" title="Job Slap Logo" width="160" height="120" layout="intrinsic" src="/job-slap-1-200.png" />
-
-    let skillsContent = <div className={styles.csnSkillsPage}>
-      <div className={styles.csnSkillsPageHeadingRow}>
-        <div onClick={e => setAppStarted(false)}>
-          {logo}
-        </div>
-      </div>
-      <div className={styles.csnSkillsPageMainRow}>
-        <div className={styles.csnSkillsFormContainer }>
-          <div className={styles.csnSkillsFormContainerHeading}>
-
-          </div>
-          <div className={styles.csnSkillsFormContainerContent}>
-            <form onSubmit={e => handleSkillsSubmit(e)}>
-              <div className={styles.csnFormRow}>
-                <div className={styles.csnFormLabel}>
-                  Skill
-                </div>
-                <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-name" value={skillName} onChange={e => setSkillName(e.target.value)} />
-                </div>
-              </div>
-              <div className={styles.csnFormRow}>
-                <div className={styles.csnFormLabel}>
-                  ID
-                </div>
-                <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-id" value={skillID} onChange={e => setSkillID(e.target.value)} />
-                </div>
-              </div>
-              <div className={styles.csnFormRow}>
-                <div className={styles.csnFormLabel}>
-                  Description
-                </div>
-                <div className={styles.csnFormInput}>
-                  <textarea name="skill-desc" value={skillDesc} onChange={e => setSkillDesc(e.target.value)} rows={4}>
-                  </textarea>
-                </div>
-              </div>
-              <div className={styles.csnFormRow}>
-                <div className={styles.csnFormLabel}>
-                  Image URL
-                </div>
-                <div className={styles.csnFormInput}>
-                  <input type="text" name="skill-image-url" value={skillImageURL} onChange={e => setSkillImageURL(e.target.value)} />
-                </div>
-              </div>
-              <div className={styles.csnFormRow}>
-                <input type="submit" name="submit" value="submit" />
-              </div>
-              
-            </form>
-          </div>
-        </div>
-        <div className={styles.csnSkillsContainer }>
-          <div className={styles.csnSkillsContainerHeading}>
-            <h1>Your Skills</h1>
-          </div>
-          <div className={styles.csnSkillsContainerContent}>
-            <DataModels skillData={skillData} ceramic={ceramic} />
-          </div>
-
-        </div>
-      </div>
-    </div>
-    return skillsContent;
+    return <DataModels ceramic={ceramic} setAppStarted={setAppStarted} />
   }
 
   return (
