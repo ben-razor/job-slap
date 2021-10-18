@@ -18,6 +18,10 @@ Alternatively, they may be sent verified skills from an official issuing body wi
 
 For example, this facility will allow for decentralized gaming environments to share the skills of a gamer so that will already have access to skill learned in previous games when beginning to play something new.
 
+## Limitations
+
+There is no schema error handling UI implemented in this simple demo application. The console must be checked for errors.
+
 ## Ceramic
 
 Ceramic is a platform for storing and sharing streams of data.
