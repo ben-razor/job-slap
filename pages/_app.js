@@ -142,9 +142,9 @@ function MyApp() {
                 <ul className={styles.csnMainList}>
                   <li>Unsatisfying job?</li>
                   <li>Feeling underappreciated?</li>
-                  <li>Can't see a way out?</li>
-                  <li><span className={styles.strikeout}>Maybe it's you?</span></li>
-                  <li>It's definitely NOT you!</li>
+                  <li>Can&apos;t see a way out?</li>
+                  <li><span className={styles.strikeout}>Maybe it&apos;s you?</span></li>
+                  <li>It&apos;s definitely NOT you!</li>
                 </ul>
               </div>
             </div>
@@ -155,7 +155,7 @@ function MyApp() {
                   ethAddresses ?  
                   (
                     ceramic ?
-                    <button onClick={e => setAppStarted(true)}>Let's go!!</button> : 
+                    <button onClick={e => setAppStarted(true)}>Let&apos;s go!!</button> : 
                     getWaitingForDIDPanel()
                   ) 
                   :

@@ -13,8 +13,7 @@ import { ModelManager } from '@glazed/devtools'
 import { model as basicProfileModel } from '@datamodels/identity-profile-basic'
 import { model as cryptoAccountsModel } from '@datamodels/identity-accounts-crypto'
 import { model as webAccountsModel } from '@datamodels/identity-accounts-web'
-import { model as basicSkillModel} from '@datamodels/basic-skill'
-import { model as basicSkillsModel} from '@datamodels/basic-skills'
+import { model as basicSkillsModel} from '@ben-razor/basic-skills'
 
 function DataModels(props) {
     const [published, setPublished] = useState();
@@ -54,6 +53,7 @@ function DataModels(props) {
                 setDataStore(_dataStore);
                 setSchemaURL(schemaURL);
 
+                // await _dataStore.set('basicSkills', { skills: [] }); 
                 let allSkills = await _dataStore.get('basicSkills');
                 if(!allSkills) {
                     allSkills = { skills: [] }
@@ -96,9 +96,9 @@ function DataModels(props) {
 
     function handleSkillsSubmit(e) {
         setLoadingMessage('Updating skills...')
-        setTimeout(() => {
+        let t = setTimeout(() => {
             setLoadingMessage('')
-        }, 8000);
+        }, 20000);
 
         let skillData = {
             name: skillName,
@@ -126,7 +126,8 @@ function DataModels(props) {
                 await dataStore.set('basicSkills', allSkills); 
 
                 setSkills(allSkills.skills.reverse());
-                setLoadingMessage('')
+                setLoadingMessage('');
+                clearTimeout(t);
             })();
         }
 
@@ -177,9 +178,9 @@ function DataModels(props) {
 
     function submitVerifiedSkill(e) {
         setLoadingMessage('Updating skills...')
-        setTimeout(() => {
+        let t = setTimeout(() => {
             setLoadingMessage('')
-        }, 8000);
+        }, 20000);
 
         try {
             let verfiedSkill = JSON.parse(verifiedSkillText);
@@ -205,6 +206,9 @@ function DataModels(props) {
                 catch(e) {
                     console.log(e);
                 }
+                finally {
+                    clearTimeout(t);
+                }
             
             })();
 
@@ -212,6 +216,9 @@ function DataModels(props) {
         catch(e) {
             console.log(e);
             setLoadingMessage('')
+        }
+        finally {
+            clearTimeout(t);
         }
         e.preventDefault();
     }
@@ -289,7 +296,10 @@ function DataModels(props) {
                                 </div>
                             }
                             <div>
-                                { skills && displaySkill(skills) }
+                                { (skills && skills.length)  ?
+                                    displaySkill(skills) :
+                                    <h3>You need to add some skills!</h3>
+                                }
                             </div>
                         </div>
                     </div>

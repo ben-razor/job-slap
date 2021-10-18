@@ -103,6 +103,13 @@
     "@babel/helper-validator-identifier" "^7.14.9"
     "to-fast-properties" "^2.0.0"
 
+"@ben-razor/basic-skills@^0.0.1":
+  "integrity" "sha512-qAWySJoVnCAkgjFwm+vMhza52BKToQRuGgbow4skN+jbyKA6cYd9d0P/ssqZWQYIZzkhPH9/8OrI8QF7tN/YWg=="
+  "resolved" "https://registry.npmjs.org/@ben-razor/basic-skills/-/basic-skills-0.0.1.tgz"
+  "version" "0.0.1"
+  dependencies:
+    "@glazed/types" "^0.1.3"
+
 "@ceramicnetwork/3id-did-resolver@^1.4.3":
   "integrity" "sha512-0pc+3MGysQhMG3czOV9paS9iuQaKuP1ubyIPibiOPUBXr95EQML1B7a5B1WkeI7wQvqeggj0LZMNk2ihusVdnw=="
   "resolved" "https://registry.npmjs.org/@ceramicnetwork/3id-did-resolver/-/3id-did-resolver-1.4.4.tgz"
@@ -227,12 +234,6 @@
   "version" "0.3.0"
   dependencies:
     "rxjs" "^6.6.6"
-
-"@datamodels/basic-skills@file:../datamodels-basic-skill/datamodels/packages/basic-skills":
-  "resolved" "file:../datamodels-basic-skill/datamodels/packages/basic-skills"
-  "version" "0.0.1"
-  dependencies:
-    "@glazed/types" "^0.1.3"
 
 "@datamodels/identity-accounts-crypto@^0.1.2":
   "integrity" "sha512-N8Y3uVCxeYEze09eIUJKy3P9QSivZJeHwFVGZhRYhQpKqqUBLfNOL2Tfb2jRRu0n5G3Zqwwd9j9zbZ3uwpjOfA=="
