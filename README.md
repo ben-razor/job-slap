@@ -4,6 +4,8 @@ An application to demonstrate the Basic Skill DataModel submitted to the [Cerami
 
 Watch the [demo movie](https://youtu.be/2OSPV_94l0o).
 
+Try out the live [demo app](https://job-slap.vercel.app/)
+
 Part of the [Gitcoin Hackathon](https://gitcoin.co/issue/ceramicnetwork/ceramic/80/100026723).
 
 ## About The Application
